@@ -114,11 +114,11 @@ func testCase(threadCount int, n int, accuracy int) int64 {
 
 func main() {
 	// Truncates the file for clean writing
-	f, _ := os.OpenFile("out.txt", os.O_WRONLY, 0644); f.Truncate(0); f.Close();
+	f, _ := os.OpenFile("out.csv", os.O_WRONLY, 0644); f.Truncate(0); f.Close();
 	for sampleSize := 1 << 4; sampleSize <= 1 << 24; sampleSize = sampleSize << 1 {
 		for threadCount := 1; threadCount <= 1 << 3; threadCount = threadCount << 1 {
 			fmt.Printf("Working on: %d %d\n", threadCount, sampleSize);
-			f, _ := os.OpenFile("out.txt", os.O_APPEND|os.O_WRONLY, 0644)
+			f, _ := os.OpenFile("out.csv", os.O_APPEND|os.O_WRONLY, 0644)
 			var calc = testCase(threadCount, sampleSize, 10);
 			f.WriteString(fmt.Sprintf("%d,%d,%d\n", threadCount, sampleSize, calc)); f.Close();
 		}
