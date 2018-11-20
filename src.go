@@ -12,7 +12,7 @@ import "os"
 /*The parameter dir indicates the sorting direction, ASCENDING
 or DESCENDING; if (a[i] > a[j]) agrees with the direction,
 then a[i] and a[j] are interchanged.*/
-func compAndSwap(a[] int, i int, j int, dir bool) {
+func cmpAndSwap(a[] int, i int, j int, dir bool) {
 	if (dir == (a[i] > a[j])) {
 		a[i], a[j] = a[j], a[i];
 	}
@@ -26,7 +26,7 @@ func bitonicMerge(a[] int, low int, cnt int, dir bool) {
 	if (cnt > 1) {
 		var k = cnt / 2;
 		for i := low; i < low + k; i++ {
-			compAndSwap(a, i, i + k, dir);
+			cmpAndSwap(a, i, i + k, dir);
 		}
 		bitonicMerge(a, low, k, dir);
 		bitonicMerge(a, low + k, k, dir);
@@ -49,7 +49,7 @@ func bitonicSort(a[] int, low int, cnt int, dir bool) {
 	}
 }
 
-/**/
+/* Sorts threads parallely effectivelly - does not split more than it needs to */
 func bitonicSortParallel(a[] int, low int, cnt int, dir bool, availableThreads int, owg *sync.WaitGroup) {
 	defer owg.Done();
 	// Cannot split up the process parralel more than it currently is. Continue operations as single thread.
@@ -80,6 +80,7 @@ func sortParallel(a[] int, n int, threadCount int) {
 	wg.Wait();
 }
 
+/* One test with a given thread count, input data and required accuracy */
 func testCase(threadCount int, n int, accuracy int) int64 {
 	var seq = make([]int, n);
 	var timeTaken time.Duration;
@@ -98,12 +99,14 @@ func testCase(threadCount int, n int, accuracy int) int64 {
 		timeTaken += t2.Sub(t1) / time.Millisecond;
 
 		// Check is result fully sorted. Confimation test, mostly for debug purposes.
+		/*
 		for i := 1; i < n; i++ {
 			if (seq[i - 1] > seq[i]) {
 				fmt.Println("Cycle invariant was broken!");
 				panic(1);
 			}
 		}
+		*/
 	}
 
 	return int64(timeTaken) / int64(accuracy);
